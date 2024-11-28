@@ -15,19 +15,16 @@ final_OT_scores = output_folder + '/final_OT_scores_maxV2G.txt' # to write
 
 print("Read hg38 positions")
 pos_dict2={}  # store set of positions by chromosomes: pos_dict2[chrom][pos]=rsID
-#chroms = set()
 with open(hg_38, 'r') as hg38:
     hg38.readline()
     for line in hg38:
         chr = line.split('\t')[0].strip().replace('chr', '')
         pos = str(int(line.split('\t')[1])+1)
         rsid = line.split('\t')[3]
-        #print(chr, pos, rsid)
         try:
             pos_dict2[chr][pos]=rsid
         except KeyError:
             pos_dict2[chr]={}
-            #chroms.add(chr)
 
 
 # read p-value to rsids
@@ -77,10 +74,8 @@ os.system(cleaning_cmd)
 print("Calculating gene scores from SNPs with rsID")
 gene_dict={} # store gene:[OTscore, weighted_score, positions]
 with open(cleaned_v2g, 'r') as v2gf:
-    #content3=v2gf.readlines()
     for line in v2gf:
         chrom, pos, gene, score = line.strip().split('\t')
-        # 1       115116069       ENSG00000009307 0.01991951710261569
         rsid=pos_dict2[chrom][pos]
         try:
             pval=pvals[rsid]
@@ -89,18 +84,15 @@ with open(cleaned_v2g, 'r') as v2gf:
             print(rsid, "not in rsid-pval dict")
 
         if gene in gene_dict:
-            #print("in gene dict", gene)
             gene_dict[gene][0] = gene_dict[gene][0] + float(score)
             gene_dict[gene][1] = gene_dict[gene][1] + float(score) * -1*math.log10(float(pval))
             gene_dict[gene][2].add(pos)
             if float(score)*-1*math.log10(float(pval)) > gene_dict[gene][3]:
                 gene_dict[gene][3]=float(score)*-1*math.log10(float(pval))
         else:
-            #print("not in gene dict", gene)
             positions=set()
             positions.add(pos)
             gene_dict[gene]=[float(score),float(score) * -1*math.log10(float(pval)), positions,float(score)*-1*math.log10(float(pval))]
-            #print(gene_dict[gene][0],gene_dict[gene][1],len(gene_dict[gene][2]))
 
 
 print("Writing final gene-score results")
