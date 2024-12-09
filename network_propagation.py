@@ -4,12 +4,12 @@ import networkx as nx
 # load network:
 id2symbol={}
 # load gene symbol for entrez ids:
-with open("/content/entrez2symbol_extended.csv", 'r') as dictfile:
+with open("data/entrez2symbol_extended.csv", 'r') as dictfile:
   for line in dictfile:
     [entrez, symbol]=line.strip().split(';')
     id2symbol[entrez]=symbol
 
-file_path = "/content/STRING_edgelist_entrez_topQ60_extended.csv"
+file_path = "data/STRING_edgelist_entrez_topQ60_extended.csv"
 df = pd.read_csv(file_path, dtype={'node1': str, 'node2': str, 'score':int})[["node1", "node2","score"]]
 graph = nx.from_pandas_edgelist(df, source="node1", target="node2")
 
@@ -19,9 +19,9 @@ print(len(graph.edges))
 
 # load gene-scores and transform:
 import numpy as np
-gene_scores="/content/gormley3_all_p510-6.csv"
-#gene_scores="/content/choquet-p510-6_network_ready.csv"
-#gene_scores="/content/dori-p510-6_network_ready.csv"
+gene_scores="data/gormley3_all_p510-6.csv"
+#gene_scores="data/choquet-p510-6_network_ready.csv"
+#gene_scores="data/dori-p510-6_network_ready.csv"
 
 maxscore_dict = {}
 scores=[]
